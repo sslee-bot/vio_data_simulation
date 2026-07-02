@@ -13,8 +13,8 @@ from GeometryLib import  drawCoordinateFrame, euler2Rbn,euler2Rnb
 import transformations as tf
 
 import os
-#filepath=os.path.abspath('.')  #表示当前所处的文件夹的绝对路径
-filepath=os.path.abspath('..')+"/bin"  #表示当前所处的文件夹上一级文件夹的绝对路径
+#filepath=os.path.abspath('.')  #absolute path of the current folder
+filepath=os.path.abspath('..')+"/bin"  #absolute path of the parent of the current folder
 
 point_id=[]
 x=[]
@@ -22,11 +22,11 @@ y=[]
 z=[]                                                                                                
 
 with open(filepath + '/all_points.txt', 'r') as f:
-    data = f.readlines()  #txt中所有字符串读入data  
+    data = f.readlines()  #read all strings from the txt file into data  
   
     for line in data:  
-        odom = line.split()        #将单个数据分隔开存好  
-        numbers_float = map(float, odom) #转化为浮点数  
+        odom = line.split()        #split the individual values apart  
+        numbers_float = map(float, odom) #convert to floats  
         x.append( numbers_float[0] )
         y.append( numbers_float[1] )
         z.append( numbers_float[2] )
@@ -38,10 +38,10 @@ timestamp = []
 qw_index = 1
 with open(filepath + '/cam_pose.txt', 'r') as f:   #   imu_circle   imu_spline
 
-    data = f.readlines()  #txt中所有字符串读入data    
+    data = f.readlines()  #read all strings from the txt file into data    
     for line in data:  
-        odom = line.split()        #将单个数据分隔开存好  
-        numbers_float = map(float, odom) #转化为浮点数  
+        odom = line.split()        #split the individual values apart  
+        numbers_float = map(float, odom) #convert to floats  
 
         #timestamp.append( numbers_float[0])        
         quaterntions.append( [numbers_float[qw_index], numbers_float[qw_index+1],numbers_float[qw_index+2],numbers_float[qw_index+3]   ] )   # qw,qx,qy,qz
@@ -73,10 +73,10 @@ for i in range(0,400,5):
     
     s = filepath + '/keyframe/all_points_' +str(i)+'.txt'
     with open(s, 'r') as f:   
-        data = f.readlines()  #txt中所有字符串读入data  
+        data = f.readlines()  #read all strings from the txt file into data  
         for line in data:  
-            odom = line.split()        #将单个数据分隔开存好  
-            numbers_float = map(float, odom) #转化为浮点数  
+            odom = line.split()        #split the individual values apart  
+            numbers_float = map(float, odom) #convert to floats  
             x1.append( numbers_float[0] )
             y1.append( numbers_float[1] )
             z1.append( numbers_float[2] )
@@ -85,10 +85,10 @@ for i in range(0,400,5):
 
     s = filepath + '/house_model/house.txt'
     with open(s, 'r') as f:
-        data = f.readlines()  # txt中所有字符串读入data
+        data = f.readlines()  # read all strings from the txt file into data
         for line in data:
-            odom = line.split()  # 将单个数据分隔开存好
-            numbers_float = map(float, odom)  # 转化为浮点数
+            odom = line.split()  # split the individual values apart
+            numbers_float = map(float, odom)  # convert to floats
             ax.plot([numbers_float[0], numbers_float[3]], [numbers_float[1], numbers_float[4]],'b' ,zs=[numbers_float[2], numbers_float[5]])
         
     ax.scatter(x1, y1, z1,c='r',marker='^')

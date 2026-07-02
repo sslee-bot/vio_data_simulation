@@ -10,7 +10,7 @@ import numpy as np
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 # ############## 3d tranform lib  ###################### 
-#            几何变换的一些函数，欧拉角，　旋转矩阵等
+#            some functions for geometric transforms: euler angles, rotation matrices, etc.
 ##############################################
 
 def Rx(phi):
