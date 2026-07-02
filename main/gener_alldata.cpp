@@ -17,10 +17,9 @@ void CreatePointsLines(Points& points, Lines& lines)
     std::ifstream f;
     f.open("house_model/house.txt");
 
-    while(!f.eof())
+    std::string s;
+    while(std::getline(f,s))
     {
-        std::string s;
-        std::getline(f,s);
         if(!s.empty())
         {
             std::stringstream ss;

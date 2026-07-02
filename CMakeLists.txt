@@ -21,3 +21,5 @@ ${EIGEN3_INCLUDE_DIR}
 
 ADD_EXECUTABLE(data_gen main/gener_alldata.cpp src/param.h src/param.cpp src/utilities.h src/utilities.cpp src/imu.h src/imu.cpp)
 
+add_subdirectory(estimator)
+
