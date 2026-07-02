@@ -6,7 +6,7 @@
 #include "imu.h"
 #include "utilities.h"
 
-// euler2Rotation:   body frame to interitail frame
+// euler2Rotation:   body frame to inertial frame
 Eigen::Matrix3d euler2Rotation( Eigen::Vector3d  eulerAngles)
 {
     double roll = eulerAngles(0);
@@ -80,25 +80,25 @@ MotionData IMU::MotionModel(double t)
     // param
     float ellipse_x = 15;
     float ellipse_y = 20;
-    float z = 1;           // z轴做sin运动
-    float K1 = 10;          // z轴的正弦频率是x，y的k1倍
-    float K = M_PI/ 10;    // 20 * K = 2pi 　　由于我们采取的是时间是20s, 系数K控制yaw正好旋转一圈，运动一周
+    float z = 1;           // sinusoidal motion along the z-axis
+    float K1 = 10;          // the z-axis sinusoidal frequency is K1 times that of x and y
+    float K = M_PI/ 10;    // 20 * K = 2pi. Since the run lasts 20 s, K makes yaw rotate exactly one full turn (one loop)
 
     // translation
     // twb:  body frame in world frame
     Eigen::Vector3d position( ellipse_x * cos( K * t) + 5, ellipse_y * sin( K * t) + 5,  z * sin( K1 * K * t ) + 5);
-    Eigen::Vector3d dp(- K * ellipse_x * sin(K*t),  K * ellipse_y * cos(K*t), z*K1*K * cos(K1 * K * t));              // position导数　in world frame
+    Eigen::Vector3d dp(- K * ellipse_x * sin(K*t),  K * ellipse_y * cos(K*t), z*K1*K * cos(K1 * K * t));              // first derivative of position in world frame
     double K2 = K*K;
-    Eigen::Vector3d ddp( -K2 * ellipse_x * cos(K*t),  -K2 * ellipse_y * sin(K*t), -z*K1*K1*K2 * sin(K1 * K * t));     // position二阶导数
+    Eigen::Vector3d ddp( -K2 * ellipse_x * cos(K*t),  -K2 * ellipse_y * sin(K*t), -z*K1*K1*K2 * sin(K1 * K * t));     // second derivative of position
 
     // Rotation
     double k_roll = 0.1;
     double k_pitch = 0.2;
     Eigen::Vector3d eulerAngles(k_roll * cos(t) , k_pitch * sin(t) , K*t );   // roll ~ [-0.2, 0.2], pitch ~ [-0.3, 0.3], yaw ~ [0,2pi]
-    Eigen::Vector3d eulerAnglesRates(-k_roll * sin(t) , k_pitch * cos(t) , K);      // euler angles 的导数
+    Eigen::Vector3d eulerAnglesRates(-k_roll * sin(t) , k_pitch * cos(t) , K);      // derivatives of the euler angles
 
 //    Eigen::Vector3d eulerAngles(0.0,0.0, K*t );   // roll ~ 0, pitch ~ 0, yaw ~ [0,2pi]
-//    Eigen::Vector3d eulerAnglesRates(0.,0. , K);      // euler angles 的导数
+//    Eigen::Vector3d eulerAnglesRates(0.,0. , K);      // derivatives of the euler angles
 
     Eigen::Matrix3d Rwb = euler2Rotation(eulerAngles);         // body frame to world frame
     Eigen::Vector3d imu_gyro = eulerRates2bodyRates(eulerAngles) * eulerAnglesRates;   //  euler rates trans to body gyro
@@ -116,8 +116,9 @@ MotionData IMU::MotionModel(double t)
 
 }
 
-//读取生成的imu数据并用imu动力学模型对数据进行计算，最后保存imu积分以后的轨迹，
-//用来验证数据以及模型的有效性。
+// Reads the generated IMU data, propagates it through the IMU dynamics model,
+// and finally saves the integrated (dead-reckoned) trajectory,
+// which is used to verify the validity of the data and the model.
 void IMU::testImu(std::string src, std::string dist)
 {
     std::vector<MotionData>imudata;
@@ -146,15 +147,15 @@ void IMU::testImu(std::string src, std::string dist)
         dq.z() = dtheta_half.z();
         dq.normalize();
         
-        /// imu 动力学模型 欧拉积分
+        /// IMU dynamics model — Euler integration
         Eigen::Vector3d acc_w = Qwb * (imupose.imu_acc) + gw;  // aw = Rwb * ( acc_body - acc_bias ) + gw
         Qwb = Qwb * dq;
         Pwb = Pwb + Vw * dt + 0.5 * dt * dt * acc_w;
         Vw = Vw + acc_w * dt;
         
-        /// 中值积分
+        /// midpoint integration (not implemented)
 
-        //　按着imu postion, imu quaternion , cam postion, cam quaternion 的格式存储，由于没有cam，所以imu存了两次
+        // Stored in the order: imu position, imu quaternion, cam position, cam quaternion. Since there is no camera, the imu values are stored twice.
         save_points<<imupose.timestamp<<" "
                    <<Qwb.w()<<" "
                    <<Qwb.x()<<" "
@@ -174,6 +175,6 @@ void IMU::testImu(std::string src, std::string dist)
 
     }
 
-    std::cout<<"test　end"<<std::endl;
+    std::cout<<"test end"<<std::endl;
 
 }

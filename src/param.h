@@ -26,7 +26,7 @@ public:
     double acc_bias_sigma = 0.0001;
 
     double gyro_noise_sigma = 0.015;    // rad/s * 1/sqrt(hz)
-    double acc_noise_sigma = 0.019;      //　m/(s^2) * 1/sqrt(hz)
+    double acc_noise_sigma = 0.019;      // m/(s^2) * 1/sqrt(hz)
 
     double pixel_noise = 1;              // 1 pixel noise
 
@@ -39,7 +39,7 @@ public:
     double image_h = 640;
 
 
-    // 外参数
+    // extrinsics
     Eigen::Matrix3d R_bc;   // cam to body
     Eigen::Vector3d t_bc;     // cam to body
 

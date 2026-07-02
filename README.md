@@ -1,40 +1,40 @@
 # imusim
-imu和cam数据仿真，用于vio算法测试，代码有任何问题都欢迎交流 heyijia_2013@163.com。
+IMU and camera data simulation, used for testing VIO algorithms. Feedback on any code issues is welcome: heyijia_2013@163.com.
 
-we also create a ros_version in ros_version branch.
+We also provide a ROS version in the `ros_version` branch.
 
 ![demo pic](https://github.com/HeYijia/vio_data_simulation/blob/master/bin/demo.png?raw=true)
 
-## 坐标系
-- **B**ody frame: imu坐标系
+## Coordinate frames
+- **B**ody frame: the IMU frame.
 
-- **C**am frame: 相机坐标系
+- **C**am frame: the camera frame.
 
-- **W**orld frame: imu坐标系的第一帧位置
+- **W**orld frame: the pose of the first IMU frame.
 
-- **N**avigation frame: NED（北东地）or ENU（东北天），本代码采用的是ENU，重力向量在该坐标系下为$(0,0,-9.81)$
+- **N**avigation frame: NED (North-East-Down) or ENU (East-North-Up). This code uses ENU, in which the gravity vector is $(0,0,-9.81)$.
 
-目前，imu的z轴向上，xy平面内做椭圆运动，z轴做正弦运动，x轴沿着圆周向外。外参数Tbc将相机坐标旋转，使得相机朝向特征点。
+Currently the IMU z-axis points up, the body performs an elliptical motion in the xy-plane, a sinusoidal motion along the z-axis, and the x-axis points radially outward along the circle. The extrinsic transform Tbc rotates the camera frame so that the camera faces the feature points.
 
-## 代码结构
-main/gener_alldata.cpp : 用于生成imu数据，相机轨迹，特征点像素坐标，特征点的3d坐标
+## Code structure
+main/gener_alldata.cpp: generates IMU data, the camera trajectory, feature-point pixel coordinates, and the 3D coordinates of feature points.
 
-src/paramc.h：imu噪声参数，imu频率，相机内参数等等
+src/param.h: IMU noise parameters, IMU frequency, camera intrinsics, etc.
 
-src/camera_model.cpp：相机模型，调用的svo，目前代码里这个文件删掉了
+src/camera_model.cpp: the camera model, taken from svo. This file has been removed from the current code.
 
-python_tool/：文件夹里为可视化工具，draw_points.py就是动态绘制相机轨迹和观测到的特征点。如果是ubuntu不需额外安装，windows需要安装python matplot等依赖项
+python_tool/: visualization tools. draw_points.py dynamically plots the camera trajectory and the observed feature points. On Ubuntu no extra installation is needed; on Windows you must install Python, matplotlib, and other dependencies.
 
-## 数据存储的格式
-### 特征点
-> x，y，z，1，u，v
+## Data storage format
+### Feature points
+> x, y, z, 1, u, v
 
-每个特征出现在文件里的顺序，就是他们独立的id，可用来检索特征匹配
+The order in which each feature appears in the file is its unique id, which can be used to look up feature matches.
 
-### imu data
-> timestamp (1)，imu quaternion(4)，imu position(3)，imu gyro(3)，imu acc(3)
+### IMU data
+> timestamp (1), imu quaternion (4), imu position (3), imu gyro (3), imu acc (3)
 
-### cam data
-> timestamp (1)，cam quaternion(4)，cam position(3)，imu gyro(3)，imu acc(3)
+### Cam data
+> timestamp (1), cam quaternion (4), cam position (3), imu gyro (3), imu acc (3)
 
-注意，由于imu和cam的存储采用的是同一个函数，所以cam也会存储一些gyro,acc这些数据，但是没用，是多余存储的。
+Note: because the IMU and camera use the same function for storage, the camera file also stores some gyro/acc data. These are unused and stored redundantly.

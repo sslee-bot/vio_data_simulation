@@ -91,10 +91,10 @@ int main(){
     // }
     // std::cout << Qwb.coeffs().transpose() <<"\n"<<Qwb.toRotationMatrix() << std::endl;
 
-    // 建立keyframe文件夹
+    // create the keyframe folder
     mkdir("keyframe", 0777);
 
-    // 生成3d points
+    // generate 3d points
     Points points;
     Lines lines;
     CreatePointsLines(points, lines);
@@ -152,15 +152,15 @@ int main(){
         Twc.block(0, 0, 3, 3) = data.Rwb;
         Twc.block(0, 3, 3, 1) = data.twb;
 
-        // 遍历所有的特征点，看哪些特征点在视野里
-        std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> > points_cam;    // ３维点在当前cam视野里
-        std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > features_cam;  // 对应的２维图像坐标
+        // iterate over all feature points and check which ones are in the field of view
+        std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> > points_cam;    // 3d points currently in the camera's field of view
+        std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > features_cam;  // the corresponding 2d image coordinates
         for (int i = 0; i < points.size(); ++i) {
-            Eigen::Vector4d pw = points[i];          // 最后一位存着feature id
-            pw[3] = 1;                               //改成齐次坐标最后一位
+            Eigen::Vector4d pw = points[i];          // the last element stores the feature id
+            pw[3] = 1;                               // set the last element to 1 for homogeneous coordinates
             Eigen::Vector4d pc1 = Twc.inverse() * pw; // T_wc.inverse() * Pw  -- > point in cam frame
 
-            if(pc1(2) < 0) continue; // z必须大于０,在摄像机坐标系前方
+            if(pc1(2) < 0) continue; // z must be greater than 0, i.e. in front of the camera in the camera frame
 
             Eigen::Vector2d obs(pc1(0)/pc1(2), pc1(1)/pc1(2)) ;
             // if( (obs(0)*460 + 255) < params.image_h && ( obs(0) * 460 + 255) > 0 &&
@@ -185,16 +185,16 @@ int main(){
         Twc.block(0, 0, 3, 3) = data.Rwb;
         Twc.block(0, 3, 3, 1) = data.twb;
 
-        // 遍历所有的特征点，看哪些特征点在视野里
-        // std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> > points_cam;    // ３维点在当前cam视野里
-        std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> > features_cam;  // 对应的２维图像坐标
+        // iterate over all feature points and check which ones are in the field of view
+        // std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> > points_cam;    // 3d points currently in the camera's field of view
+        std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> > features_cam;  // the corresponding 2d image coordinates
         for (int i = 0; i < lines.size(); ++i) {
             Line linept = lines[i];
 
             Eigen::Vector4d pc1 = Twc.inverse() * linept.first; // T_wc.inverse() * Pw  -- > point in cam frame
             Eigen::Vector4d pc2 = Twc.inverse() * linept.second; // T_wc.inverse() * Pw  -- > point in cam frame
 
-            if(pc1(2) < 0 || pc2(2) < 0) continue; // z必须大于０,在摄像机坐标系前方
+            if(pc1(2) < 0 || pc2(2) < 0) continue; // z must be greater than 0, i.e. in front of the camera in the camera frame
 
             Eigen::Vector4d obs(pc1(0)/pc1(2), pc1(1)/pc1(2),
                                 pc2(0)/pc2(2), pc2(1)/pc2(2));
