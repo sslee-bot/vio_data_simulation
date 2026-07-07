@@ -132,7 +132,7 @@ void IMU::testImu(std::string src, std::string dist)
     Eigen::Quaterniond Qwb(init_Rwb_);            // quaterniond:  from imu measurements
     Eigen::Vector3d Vw = init_velocity_;          // velocity  :   from imu measurements
     Eigen::Vector3d gw(0,0,-9.81);    // ENU frame
-    Eigen::Vector3d temp_a;
+    // Eigen::Vector3d temp_a;
     Eigen::Vector3d theta;
     for (int i = 1; i < imudata.size(); ++i) {
 
@@ -155,7 +155,9 @@ void IMU::testImu(std::string src, std::string dist)
         
         /// midpoint integration (not implemented)
 
-        // Stored in the order: imu position, imu quaternion, cam position, cam quaternion. Since there is no camera, the imu values are stored twice.
+        // Columns: timestamp, imu quaternion (w,x,y,z), imu position, then the same
+        // quaternion+position repeated for the camera slot. Only the imu/body pose is
+        // available, so the camera slot is filled with a copy to keep the layout fixed.
         save_points<<imupose.timestamp<<" "
                    <<Qwb.w()<<" "
                    <<Qwb.x()<<" "

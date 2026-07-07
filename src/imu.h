@@ -12,6 +12,7 @@
 
 #include "param.h"
 
+// IMU or cam pose data
 struct MotionData
 {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

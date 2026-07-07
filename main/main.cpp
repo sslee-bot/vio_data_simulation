@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-#include "data_loader.h"
-#include "estimator.h"
+#include "../util/data_loader.h"
+#include "../estimator/estimator.h"
 
 namespace {
 // Resolve a path to its absolute form for display; fall back to the input if it
@@ -39,6 +39,11 @@ int main(int argc, char** argv) {
     vio::Estimator estimator;
     estimator.SetData(data);
     estimator.Run();
+
+    const std::string out = data_dir + "/vio_estimated_tum.txt";
+    estimator.SaveTrajectoryTUM(out);
+    std::cout << "Estimated poses  : " << estimator.trajectory().size() << "\n"
+              << "Trajectory saved : " << AbsolutePath(out) << std::endl;
 
     return 0;
 }

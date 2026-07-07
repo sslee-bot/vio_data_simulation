@@ -62,7 +62,7 @@ void CreatePointsLines(Points& points, Lines& lines)
         }
     }
 
-    // create more 3d points, you can comment this code
+    // create more 3d points
     int n = points.size();
     for (int j = 0; j < n; ++j) {
         Eigen::Vector4d p = points[j] + Eigen::Vector4d(0.5,0.5,-0.5,0);
@@ -155,13 +155,14 @@ int main(){
         std::vector<Eigen::Vector4d, Eigen::aligned_allocator<Eigen::Vector4d> > points_cam;    // 3d points currently in the camera's field of view
         std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > features_cam;  // the corresponding 2d image coordinates
         for (int i = 0; i < points.size(); ++i) {
-            Eigen::Vector4d pw = points[i];          // the last element stores the feature id
-            pw[3] = 1;                               // set the last element to 1 for homogeneous coordinates
+            Eigen::Vector4d pw = points[i];          // index i is the implicit feature id; the 4th element is an intended-but-unused id slot, currently always 1
+            pw[3] = 1;                               // ensure the homogeneous coordinate is 1
             Eigen::Vector4d pc1 = Twc.inverse() * pw; // T_wc.inverse() * Pw  -- > point in cam frame
 
             if(pc1(2) < 0) continue; // z must be greater than 0, i.e. in front of the camera in the camera frame
 
             Eigen::Vector2d obs(pc1(0)/pc1(2), pc1(1)/pc1(2)) ;
+            // (disabled) keep only points that project within the image bounds
             // if( (obs(0)*460 + 255) < params.image_h && ( obs(0) * 460 + 255) > 0 &&
                    // (obs(1)*460 + 255) > 0 && ( obs(1)* 460 + 255) < params.image_w )
             {

@@ -6,7 +6,7 @@
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
 
-#include "data_loader.h"
+#include "../util/data_loader.h"
 
 namespace vio {
 
@@ -19,8 +19,8 @@ class Estimator {
 public:
     struct Pose {
         double timestamp = 0.0;
-        Eigen::Quaterniond q = Eigen::Quaterniond::Identity(); // world <- body
-        Eigen::Vector3d p = Eigen::Vector3d::Zero();
+        Eigen::Quaterniond q = Eigen::Quaterniond::Identity(); // world <- camera
+        Eigen::Vector3d p = Eigen::Vector3d::Zero();           // camera position in world
     };
 
     void SetData(const SimData& data) { data_ = data; }

@@ -25,6 +25,7 @@ void save_features(std::string filename,
     std::ofstream save_points;
     save_points.open(filename.c_str());
 
+    // Each line: x y z w u v. Here p(3) (w) is the homogeneous coordinate, always 1.
     for (int i = 0; i < points.size(); ++i) {
         Eigen::Vector4d p = points[i];
         Eigen::Vector2d f = features[i];
