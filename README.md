@@ -1,3 +1,16 @@
+
+Forked repository for purposes:
+- Simplified test (no real sensor data & feature depth estimation)
+- Analysis of Computation time along with parameters
+- Effectiveness of cam-IMU time offset estimation
+
+Strategies which are considered (not fully implemented yet):
+- `TODO: write`
+
+> The content below is from the original author.
+
+---
+
 # imusim
 IMU and camera data simulation, used for testing VIO algorithms. Feedback on any code issues is welcome: heyijia_2013@163.com.
 
