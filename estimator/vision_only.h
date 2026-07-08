@@ -33,6 +33,12 @@ public:
 
     const std::vector<Pose>& trajectory() const { return trajectory_; }
 
+    // Convert the estimated camera trajectory (world<-cam) to body poses
+    // (world<-body) using the known camera-IMU extrinsics (R_bc, t_bc = cam->body).
+    // These body poses at the camera timestamps are the measurements for stage 2.
+    std::vector<Pose> BodyTrajectory(const Eigen::Matrix3d& R_bc,
+                                     const Eigen::Vector3d& t_bc) const;
+
 private:
     SimData data_;
     std::vector<Pose> trajectory_;

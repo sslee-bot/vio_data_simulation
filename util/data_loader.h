@@ -27,7 +27,8 @@ struct SimData {
 
 // Load IMU + camera poses + per-frame observations from a data directory
 // (the simulator's bin/ output). Returns false if a required file is missing.
-bool LoadSimData(const std::string& data_dir, SimData& out);
+// use_noisy_imu selects imu_pose_noise.txt (true) or the clean imu_pose.txt (false).
+bool LoadSimData(const std::string& data_dir, SimData& out, bool use_noisy_imu = true);
 
 // Parse a single keyframe/all_points_<n>.txt file (x y z w u v per line).
 bool LoadFrameObservations(const std::string& path, FrameObservations& out);

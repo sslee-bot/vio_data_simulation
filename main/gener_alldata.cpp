@@ -2,6 +2,7 @@
 // Created by hyj on 17-6-22.
 //
 
+#include <cstdlib>
 #include <fstream>
 #include <sys/stat.h>
 #include "../src/imu.h"
@@ -73,7 +74,7 @@ void CreatePointsLines(Points& points, Lines& lines)
     save_points("all_points.txt", points);
 }
 
-int main(){
+int main(int argc, char** argv){
 
     // Eigen::Quaterniond Qwb;
     // Qwb.setIdentity();
@@ -100,6 +101,8 @@ int main(){
 
     // IMU model
     Param params;
+    // optional arg: camera-IMU time offset td (seconds) to inject
+    if (argc > 1) params.cam_time_offset = atof(argv[1]);
     IMU imuGen(params);
 
     // create imu data
@@ -130,10 +133,12 @@ int main(){
     std::vector< MotionData > camdata;
     for (float t = params.t_start; t<params.t_end;) {
 
-        MotionData imu = imuGen.MotionModel(t);   // imu body frame to world frame motion
+        // Sample the trajectory at t + cam_time_offset but label the frame with the
+        // camera clock t, injecting a known camera-IMU time offset (td).
+        MotionData imu = imuGen.MotionModel(t + params.cam_time_offset);   // imu body frame to world frame motion
         MotionData cam;
 
-        cam.timestamp = imu.timestamp;
+        cam.timestamp = t;
         cam.Rwb = imu.Rwb * params.R_bc;    // cam frame in world frame
         cam.twb = imu.twb + imu.Rwb * params.t_bc; //  Tcw = Twb * Tbc ,  t = Rwb * tbc + twb
 

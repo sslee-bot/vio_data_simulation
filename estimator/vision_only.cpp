@@ -110,6 +110,23 @@ void VisionOnly::Run() {
     }
 }
 
+std::vector<VisionOnly::Pose> VisionOnly::BodyTrajectory(
+    const Eigen::Matrix3d& R_bc, const Eigen::Vector3d& t_bc) const {
+    // R_wc = R_wb * R_bc, t_wc = t_wb + R_wb * t_bc  ->  invert for the body pose.
+    std::vector<Pose> body;
+    body.reserve(trajectory_.size());
+    for (const Pose& s : trajectory_) {
+        const Eigen::Matrix3d R_wc = s.q.toRotationMatrix();
+        const Eigen::Matrix3d R_wb = R_wc * R_bc.transpose();
+        Pose b;
+        b.timestamp = s.timestamp;
+        b.q = Eigen::Quaterniond(R_wb);
+        b.p = s.p - R_wb * t_bc;
+        body.push_back(b);
+    }
+    return body;
+}
+
 bool VisionOnly::SaveTrajectoryTUM(const std::string& path) const {
     std::vector<MotionData> poses;
     poses.reserve(trajectory_.size());

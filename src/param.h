@@ -21,6 +21,10 @@ public:
     double t_start = 0.;
     double t_end = 20;  //  20 s
 
+    // camera-IMU time offset injected into the simulation (seconds): the camera
+    // pose at timestamp t is sampled from the trajectory at time t + cam_time_offset.
+    double cam_time_offset = 0.;
+
     // noise
     double gyro_bias_sigma = 1.0e-5;
     double acc_bias_sigma = 0.0001;

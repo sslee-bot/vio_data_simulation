@@ -25,8 +25,9 @@ bool LoadFrameObservations(const std::string& path, FrameObservations& out) {
     return true;
 }
 
-bool LoadSimData(const std::string& data_dir, SimData& out) {
-    const std::string imu_file = data_dir + "/imu_pose_noise.txt";
+bool LoadSimData(const std::string& data_dir, SimData& out, bool use_noisy_imu) {
+    const std::string imu_file =
+        data_dir + (use_noisy_imu ? "/imu_pose_noise.txt" : "/imu_pose.txt");
     const std::string cam_file = data_dir + "/cam_pose.txt";
 
     out.imu.clear();

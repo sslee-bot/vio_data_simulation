@@ -26,6 +26,8 @@ ADD_EXECUTABLE(data_gen main/gener_alldata.cpp src/param.h src/param.cpp src/uti
 ADD_EXECUTABLE(vio_estimator
     main/main.cpp
     estimator/vision_only.cpp
+    estimator/ekf_pose_rate.cpp
+    estimator/ba_pose_rate.cpp
     util/data_loader.cpp
     src/utilities.cpp
     src/param.cpp
