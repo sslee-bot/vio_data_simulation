@@ -8,6 +8,7 @@
 #include "../estimator/vision_only.h"
 #include "../estimator/ekf_pose_rate.h"
 #include "../estimator/ba_pose_rate.h"
+#include "../estimator/joint_feature_velocity.h"
 #include "../src/param.h"
 #include "../src/utilities.h"
 
@@ -89,6 +90,32 @@ int main(int argc, char** argv) {
               << "  Estimated td    : " << ba.td() << " s,  td_init = " << td_init << "\n"
               << "  Gyro bias       : " << ba.gyro_bias().transpose() << "\n"
               << "  Accel bias      : " << ba.acc_bias().transpose() << std::endl;
+
+    // Joint (tightly-coupled) estimator: camera poses + IMU state + td in ONE
+    // optimization (raw reprojection + IMU factors), VINS-Fusion style. Stage-1
+    // body poses are used only to initialize. Run both td parameterizations so the
+    // effect of the td mode alone (same backbone) can be compared.
+    vio::JointFeatureVelocity::Options jopt_fv;
+    jopt_fv.td_mode = vio::JointFeatureVelocity::TdMode::kFeatureVelocity;
+    vio::JointFeatureVelocity joint_fv(jopt_fv);
+    const auto body_joint_fv =
+        joint_fv.Run(data.imu, data.frames, cam_body, params.R_bc, params.t_bc, td_init);
+    SavePosesTUM(data_dir + "/vio_joint_fv_tum.txt", body_joint_fv);
+    std::cout << "\n[Joint / feature-velocity td]  (tightly-coupled optimization)\n"
+              << "  Estimated td    : " << joint_fv.td() << " s,  td_init = " << td_init << "\n"
+              << "  Gyro bias       : " << joint_fv.gyro_bias().transpose() << "\n"
+              << "  Accel bias      : " << joint_fv.acc_bias().transpose() << std::endl;
+
+    vio::JointFeatureVelocity::Options jopt_pr;
+    jopt_pr.td_mode = vio::JointFeatureVelocity::TdMode::kPoseRate;
+    vio::JointFeatureVelocity joint_pr(jopt_pr);
+    const auto body_joint_pr =
+        joint_pr.Run(data.imu, data.frames, cam_body, params.R_bc, params.t_bc, td_init);
+    SavePosesTUM(data_dir + "/vio_joint_pr_tum.txt", body_joint_pr);
+    std::cout << "\n[Joint / pose-rate td]  (tightly-coupled optimization)\n"
+              << "  Estimated td    : " << joint_pr.td() << " s,  td_init = " << td_init << "\n"
+              << "  Gyro bias       : " << joint_pr.gyro_bias().transpose() << "\n"
+              << "  Accel bias      : " << joint_pr.acc_bias().transpose() << std::endl;
 
     return 0;
 }

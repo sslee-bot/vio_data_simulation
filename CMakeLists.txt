@@ -28,6 +28,7 @@ ADD_EXECUTABLE(vio_estimator
     estimator/vision_only.cpp
     estimator/ekf_pose_rate.cpp
     estimator/ba_pose_rate.cpp
+    estimator/joint_feature_velocity.cpp
     util/data_loader.cpp
     src/utilities.cpp
     src/param.cpp
