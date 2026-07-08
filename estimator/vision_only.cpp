@@ -1,4 +1,4 @@
-#include "estimator.h"
+#include "vision_only.h"
 #include "../src/utilities.h"   // save_Pose_asTUM
 
 #include <algorithm>
@@ -59,7 +59,7 @@ void WorldCamToCamWorld(const Eigen::Matrix3d& R_wc, const Eigen::Vector3d& t_wc
 
 } // namespace
 
-void Estimator::Run() {
+void VisionOnly::Run() {
     trajectory_.clear();
     if (data_.frames.empty()) return;
 
@@ -110,7 +110,7 @@ void Estimator::Run() {
     }
 }
 
-bool Estimator::SaveTrajectoryTUM(const std::string& path) const {
+bool VisionOnly::SaveTrajectoryTUM(const std::string& path) const {
     std::vector<MotionData> poses;
     poses.reserve(trajectory_.size());
     for (const Pose& s : trajectory_) {

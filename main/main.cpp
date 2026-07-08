@@ -4,7 +4,7 @@
 #include <string>
 
 #include "../util/data_loader.h"
-#include "../estimator/estimator.h"
+#include "../estimator/vision_only.h"
 
 namespace {
 // Resolve a path to its absolute form for display; fall back to the input if it
@@ -17,7 +17,7 @@ std::string AbsolutePath(const std::string& p) {
 } // namespace
 
 // Self-contained entry point for the VIO estimator. Loads the data produced by
-// the simulator (bin/data_gen) and hands it to the estimator.
+// the simulator (bin/data_gen) and runs the vision-only camera-pose estimator.
 //
 // Run from the bin/ directory (where data_gen writes its output), same as data_gen.
 // Usage: vio_estimator [data_dir]   (data_dir defaults to the current directory)
@@ -36,14 +36,16 @@ int main(int argc, char** argv) {
               << "  Camera poses    : " << data.cam.size() << "\n"
               << "  Keyframe frames : " << data.frames.size() << std::endl;
 
-    vio::Estimator estimator;
+    // Vision-only camera poses (PnP with known landmarks).
+    vio::VisionOnly estimator;
     estimator.SetData(data);
     estimator.Run();
 
     const std::string out = data_dir + "/vio_estimated_tum.txt";
     estimator.SaveTrajectoryTUM(out);
-    std::cout << "Estimated poses  : " << estimator.trajectory().size() << "\n"
-              << "Trajectory saved : " << AbsolutePath(out) << std::endl;
+    std::cout << "\n[vision-only] camera poses\n"
+              << "  Estimated poses : " << estimator.trajectory().size() << "\n"
+              << "  Trajectory saved: " << AbsolutePath(out) << std::endl;
 
     return 0;
 }

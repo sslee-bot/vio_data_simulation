@@ -1,5 +1,5 @@
-#ifndef VIO_ESTIMATOR_ESTIMATOR_H
-#define VIO_ESTIMATOR_ESTIMATOR_H
+#ifndef VIO_ESTIMATOR_VISION_ONLY_H
+#define VIO_ESTIMATOR_VISION_ONLY_H
 
 #include <string>
 #include <vector>
@@ -10,12 +10,11 @@
 
 namespace vio {
 
-// Consumes the simulated data and produces an estimated body trajectory.
-//
-// The estimation method itself — graph optimization or a filter — is implemented
-// in Run(). This class only fixes the input/output seam (data in, trajectory out)
-// so either approach can be dropped in later without further restructuring.
-class Estimator {
+// Vision-only camera-pose estimator: per-frame reprojection minimization
+// (motion-only bundle adjustment / PnP) using the known landmark positions. IMU is
+// not used here. The output camera trajectory is the input for the stage-2
+// IMU-state / time-offset estimators.
+class VisionOnly {
 public:
     struct Pose {
         double timestamp = 0.0;
@@ -25,7 +24,7 @@ public:
 
     void SetData(const SimData& data) { data_ = data; }
 
-    // Run the estimation and populate trajectory_. Currently a stub.
+    // Solve the per-frame PnP problems and populate trajectory_.
     void Run();
 
     // Write the estimated trajectory in TUM format, for later comparison against
@@ -41,4 +40,4 @@ private:
 
 } // namespace vio
 
-#endif // VIO_ESTIMATOR_ESTIMATOR_H
+#endif // VIO_ESTIMATOR_VISION_ONLY_H
